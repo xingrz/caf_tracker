@@ -1,0 +1,23 @@
+doctype html
+
+meta(charset='utf-8')
+meta(name='viewport', content=[
+  'width=device-width',
+  'initial-scale=1.0',
+  'maximum-scale=1.0',
+  'minimum-scale=1.0',
+  'user-scalable=no'
+].join(', '))
+
+title CAF Tracker
+#root #{html}
+
+mixin assets_for(chunk)
+  if assets[chunk] && assets[chunk].styles
+    each asset in assets[chunk].styles
+      link(rel='stylesheet', href=`${publicPath}${asset}`)
+  if assets[chunk] && assets[chunk].scripts
+    each asset in assets[chunk].scripts
+      script(src=`${publicPath}${asset}`)
+
++assets_for('main')

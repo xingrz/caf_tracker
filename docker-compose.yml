@@ -1,0 +1,24 @@
+version: '2'
+services:
+  db:
+    image: mysql:5.7.19
+    volumes:
+      - /data/caf/mysql:/var/lib/mysql
+    command: --character-set-server=utf8mb4
+    environment:
+      MYSQL_ROOT_PASSWORD: development
+      MYSQL_DATABASE: caf
+
+  web:
+    build:
+      context: .
+      args:
+        ASSETS_CDN: http://localhost:3000/assets
+    environment:
+      DB: mysql://root:development@db/caf?characterEncoding=UTF-8
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - 80:3000

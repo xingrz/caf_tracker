@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const join = require('path').join;
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const FlyingAssetsPlugin = require('./flying-assets-webpack-plugin');
+const FlyingAssetsPlugin = require('flying-assets-webpack-plugin');
 
 const PUBLIC_PATH = `${(process.env.ASSETS_CDN || '/assets')}/`;
 

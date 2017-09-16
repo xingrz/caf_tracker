@@ -48,7 +48,7 @@ module.exports = {
       filename: '[name]-[hash].css',
       allChunks: true,
     }),
-    new FlyingAssetsPlugin('index.pug'),
+    new FlyingAssetsPlugin(),
   ],
 
 }

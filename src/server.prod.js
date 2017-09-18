@@ -4,6 +4,8 @@ import express from 'express';
 import morgan from 'morgan';
 import { join } from 'path';
 
+import webpackConfig from '../webpack.prod';
+
 import launching from './launching';
 
 import assets from '../dist/assets.json';
@@ -23,6 +25,7 @@ const ASSETS = join(__dirname, '..', 'dist');
     app.use(morgan('combined'));
 
     app.locals.assets = assets;
+    app.locals.publicPath = webpackConfig.output.publicPath;
     app.use('/assets', express.static(ASSETS));
     app.get('*', launching());
 

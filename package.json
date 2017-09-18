@@ -9,9 +9,9 @@
     "dev:fetch": "./node_modules/.bin/babel-node src/fetch.js",
     "start": "NODE_ENV=production node build/server.prod.js",
     "start:fetch": "NODE_ENV=production node build/fetch.js",
-    "build": "npm run build-frontend && npm run build-backend",
-    "build-frontend": "./node_modules/.bin/webpack --config webpack.prod.js",
-    "build-backend": "./node_modules/.bin/babel src -d build",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "./node_modules/.bin/webpack --config webpack.prod.js",
+    "build:server": "./node_modules/.bin/babel src -d build",
     "clean": "rm -rf build && rm -rf dist"
   },
   "repository": {

@@ -37,6 +37,7 @@ const HeaderAutoComplete = ({ ...props }) => (
   <AutoComplete
     fullWidth
     openOnFocus
+    filter={AutoComplete.caseInsensitiveFilter}
     underlineShow={false}
     hintStyle={textStyle}
     inputStyle={textStyle}
@@ -57,16 +58,37 @@ function getPreloadData() {
   return JSON.parse(root.dataset.releases);
 }
 
+function includes(text1, text2) {
+  return text1.toLowerCase().includes(text2.toLowerCase());
+}
+
 export default class Releases extends Component {
 
   constructor(props) {
     super(props);
-    const preload = getPreloadData() || [];
+    this.preload = getPreloadData() || [];
     this.state = {
-      releases: props.releases || preload,
-      chipsets: uniq(map(preload, 'chipset')),
-      versions: uniq(map(preload, 'version')),
+      releases: props.releases || this.preload,
+      chipsets: uniq(map(this.preload, 'chipset')),
+      versions: uniq(map(this.preload, 'version')),
+      filters: {
+        tag: '',
+        chipset: '',
+        version: '',
+      },
     };
+  }
+
+  applyFilters(filter) {
+    const filters = { ...this.state.filters, ...filter };
+    this.setState({
+      filters,
+      releases: this.preload.filter(item =>
+        (!filters.tag || includes(item.tag, filters.tag)) &&
+        (!filters.chipset || includes(item.chipset, filters.chipset)) &&
+        (!filters.version || includes(item.version, filters.version))
+      ),
+    });
   }
 
   renderHeader() {
@@ -81,6 +103,7 @@ export default class Releases extends Component {
           <TableHeaderColumn>
             <HeaderTextField
               hintText="Tag"
+              onChange={(evt, tag) => this.applyFilters({ tag })}
             />
           </TableHeaderColumn>
           <TableHeaderColumn>
@@ -93,12 +116,14 @@ export default class Releases extends Component {
             <HeaderAutoComplete
               hintText="SoC"
               dataSource={chipsets}
+              onUpdateInput={(chipset) => this.applyFilters({ chipset })}
             />
           </TableHeaderColumn>
           <TableHeaderColumn>
             <HeaderAutoComplete
               hintText="Android"
               dataSource={versions}
+              onUpdateInput={(version) => this.applyFilters({ version })}
             />
           </TableHeaderColumn>
         </TableRow>

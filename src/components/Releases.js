@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
 import moment from 'moment';
-import { map, uniq } from 'lodash';
+import { concat, map, uniq, uniqBy, isEqual, throttle } from 'lodash';
 
 import {
   AutoComplete,
+  CircularProgress,
   TextField,
 } from 'material-ui';
 
@@ -16,6 +17,8 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+
+import { get } from '../utils/http';
 
 const textStyle = {
   fontSize: 13,
@@ -46,16 +49,12 @@ const HeaderAutoComplete = ({ ...props }) => (
 );
 
 function getPreloadData() {
-  if (!document) {
-    return;
+  try {
+    const root = document.getElementById('root');
+    return JSON.parse(root.dataset.releases);
+  } catch (e) {
+    return [];
   }
-
-  const root = document.getElementById('root');
-  if (!root || !root.dataset || !root.dataset.releases) {
-    return;
-  }
-
-  return JSON.parse(root.dataset.releases);
 }
 
 function includes(text1, text2) {
@@ -64,30 +63,52 @@ function includes(text1, text2) {
 
 export default class Releases extends Component {
 
+  state = {
+    loading: false,
+    filters: {
+      tag: '',
+      chipset: '',
+      version: '',
+    },
+  };
+
+  preload = getPreloadData();
+
   constructor(props) {
     super(props);
-    this.preload = getPreloadData() || [];
-    this.state = {
-      releases: props.releases || this.preload,
-      chipsets: uniq(map(this.preload, 'chipset')),
-      versions: uniq(map(this.preload, 'version')),
-      filters: {
-        tag: '',
-        chipset: '',
-        version: '',
-      },
-    };
+
+    this.state.releases = props.releases || this.preload;
+    this.state.chipsets = uniq(map(this.preload, 'chipset'));
+    this.state.versions = uniq(map(this.preload, 'version'));
+
+    this.requestFiltered = throttle(this.requestFiltered, 1000);
   }
 
-  applyFilters(filter) {
+  async applyFilters(filter) {
     const filters = { ...this.state.filters, ...filter };
+    const releases = concat(this.preload, this.state.releases).filter(item =>
+      (!filters.tag || includes(item.tag, filters.tag)) &&
+      (!filters.chipset || includes(item.chipset, filters.chipset)) &&
+      (!filters.version || includes(item.version, filters.version)));
+
     this.setState({
       filters,
-      releases: this.preload.filter(item =>
-        (!filters.tag || includes(item.tag, filters.tag)) &&
-        (!filters.chipset || includes(item.chipset, filters.chipset)) &&
-        (!filters.version || includes(item.version, filters.version))
-      ),
+      releases: uniqBy(releases, 'tag'),
+      loading: true,
+    });
+
+    this.requestFiltered(filters);
+  }
+
+  async requestFiltered(filters) {
+    const { query, releases } = await get('/api/releases', { qs: filters });
+    if (!isEqual(query, this.state.filters)) {
+      return;
+    }
+
+    this.setState({
+      releases,
+      loading: false,
     });
   }
 
@@ -131,7 +152,7 @@ export default class Releases extends Component {
     );
   }
 
-  render() {
+  renderTable() {
     return (
       <Table selectable={false}>
         {this.renderHeader()}
@@ -148,6 +169,19 @@ export default class Releases extends Component {
           ))}
         </TableBody>
       </Table>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        {this.renderTable()}
+        {this.state.loading ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <CircularProgress />
+          </div>
+        ) : null}
+      </div>
     );
   }
 

@@ -17,7 +17,7 @@ export default function () {
 
     const options = {
       order: [['date', 'DESC']],
-      limit: 20,
+      limit: 200,
     };
 
     const filters = transform(query, (result, value, key) => {
@@ -29,7 +29,7 @@ export default function () {
     }, []);
 
     if (filters.length > 0) {
-      options.where = { $or: filters };
+      options.where = { $and: filters };
     }
 
     const releases = await Release.findAll(options);

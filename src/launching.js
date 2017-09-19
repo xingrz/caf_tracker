@@ -7,18 +7,25 @@ import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 import mui from './mui';
 import App from './components/App';
 
+import { Release } from './models';
+
 export default function launching() {
-  return (req, res, error) => {
+  return async (req, res, error) => {
     const context = {};
 
     const muiTheme = getMuiTheme(mui, {
       userAgent: req.get('user-agent'),
     });
 
+    const releases = await Release.findAll({
+      order: [['date', 'DESC']],
+      limit: 20,
+    });
+
     const html = renderToString(
       <StaticRouter location={req.url} context={context}>
         <MuiThemeProvider muiTheme={muiTheme}>
-          <App />
+          <App releases={releases.map(item => item.toJSON())} />
         </MuiThemeProvider>
       </StaticRouter>
     );
@@ -26,7 +33,7 @@ export default function launching() {
     if (context.url) {
       res.redirect(context.url);
     } else {
-      res.render('index', { html });
+      res.render('index', { html, releases });
     }
   };
 }

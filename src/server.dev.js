@@ -9,6 +9,7 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackAssetsMiddleware from 'flying-assets-webpack-plugin/middleware';
 import webpackConfig from '../webpack.dev';
 
+import db from './db';
 import launching from './launching';
 
 const ENV = process.env.NODE_ENV || 'development';
@@ -16,6 +17,9 @@ const PORT = process.env.PORT || 3000;
 
 (async () => {
   try {
+
+    await db.authenticate();
+    await db.sync({ force: process.argv.includes('--force-sync') });
 
     const app = express();
 

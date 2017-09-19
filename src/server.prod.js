@@ -6,6 +6,7 @@ import { join } from 'path';
 
 import webpackConfig from '../webpack.prod';
 
+import db from './db';
 import launching from './launching';
 
 import assets from '../dist/assets.json';
@@ -17,6 +18,9 @@ const ASSETS = join(__dirname, '..', 'dist');
 
 (async () => {
   try {
+
+    await db.authenticate();
+    await db.sync();
 
     const app = express();
 

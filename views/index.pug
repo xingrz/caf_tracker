@@ -10,7 +10,7 @@ meta(name='viewport', content=[
 ].join(', '))
 
 title CAF Tracker
-#root!=html
+#root(data-releases=releases)!=html
 
 mixin assets_for(chunk)
   if assets[chunk] && assets[chunk].styles

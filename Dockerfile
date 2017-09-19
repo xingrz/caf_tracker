@@ -1,8 +1,6 @@
 FROM node:6.11.2-alpine
 LABEL maintainer="chenxingyu92@gmail.com"
 
-RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
-
 # Prepare dirs
 
 ENV BUILD_DIR=/tmp/app \
@@ -15,9 +13,9 @@ RUN mkdir -p $BUILD_DIR && \
 
 WORKDIR $BUILD_DIR
 COPY package.json $BUILD_DIR
-RUN cnpm install --production && \
+RUN npm install --production && \
     cp -a ./node_modules ./node_modules-prod && \
-    cnpm install
+    npm install
 
 # Variables
 

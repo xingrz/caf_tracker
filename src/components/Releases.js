@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import moment from 'moment';
+import { map, uniq } from 'lodash';
 
 import {
   AutoComplete,
@@ -35,6 +36,7 @@ const HeaderTextField = ({ ...props }) => (
 const HeaderAutoComplete = ({ ...props }) => (
   <AutoComplete
     fullWidth
+    openOnFocus
     underlineShow={false}
     hintStyle={textStyle}
     inputStyle={textStyle}
@@ -59,12 +61,20 @@ export default class Releases extends Component {
 
   constructor(props) {
     super(props);
+    const preload = getPreloadData() || [];
     this.state = {
-      releases: props.releases || getPreloadData() || [],
+      releases: props.releases || preload,
+      chipsets: uniq(map(preload, 'chipset')),
+      versions: uniq(map(preload, 'version')),
     };
   }
 
   renderHeader() {
+    const {
+      chipsets,
+      versions,
+    } = this.state;
+
     return (
       <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
         <TableRow>
@@ -82,13 +92,13 @@ export default class Releases extends Component {
           <TableHeaderColumn>
             <HeaderAutoComplete
               hintText="SoC"
-              dataSource={[]}
+              dataSource={chipsets}
             />
           </TableHeaderColumn>
           <TableHeaderColumn>
             <HeaderAutoComplete
               hintText="Android"
-              dataSource={[]}
+              dataSource={versions}
             />
           </TableHeaderColumn>
         </TableRow>

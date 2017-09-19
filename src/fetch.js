@@ -16,14 +16,16 @@ import releases from './utils/releases';
 
     console.log('Working...');
 
-    const latest = await Release.findOne({ order: [['date', 'DESC']] });
-    console.log(`Existing latest: ${latest.date}`);
-
     let fetched = await releases();
     console.log(`Fetched ${fetched.length} releases`);
 
-    fetched = fetched.filter(release => {return release.date >= latest.date});
-    console.log(`Filtered ${fetched.length} new releases`);
+    const latest = await Release.findOne({ order: [['date', 'DESC']] });
+    if (latest) {
+      console.log(`Existing latest: ${latest.date}`);
+
+      fetched = fetched.filter(release => release.date >= latest.date);
+      console.log(`Filtered ${fetched.length} new releases`);
+    }
 
     const records = await Release.bulkCreate(fetched, { ignoreDuplicates: true });
     console.log(`Inserted ${records.length} records`);

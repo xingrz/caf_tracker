@@ -4,8 +4,6 @@ import express from 'express';
 import morgan from 'morgan';
 import { join } from 'path';
 
-import webpackConfig from '../webpack.prod';
-
 import db from './db';
 import routes from './routes';
 import launching from './launching';
@@ -14,6 +12,7 @@ import assets from '../dist/assets.json';
 
 const ENV = process.env.NODE_ENV || 'development';
 const PORT = process.env.PORT || 3000;
+const PUBLIC_PATH = `${(process.env.ASSETS_CDN || '/assets')}/`;
 
 const ASSETS = join(__dirname, '..', 'dist');
 
@@ -31,7 +30,7 @@ const ASSETS = join(__dirname, '..', 'dist');
     app.use(routes());
 
     app.locals.assets = assets;
-    app.locals.publicPath = webpackConfig.output.publicPath;
+    app.locals.publicPath = PUBLIC_PATH;
     app.use('/assets', express.static(ASSETS));
     app.get('*', launching());
 

@@ -28,7 +28,7 @@ RUN npm install --production && \
 ARG ASSETS_CDN=/assets
 
 ENV NODE_ENV=production \
-    PORT=80 \
+    PORT=8086 \
     ASSETS_CDN=$ASSETS_CDN
 
 # Build
@@ -48,4 +48,4 @@ WORKDIR $HOME_DIR
 
 CMD ["npm", "start"]
 
-EXPOSE 80
+EXPOSE 8086

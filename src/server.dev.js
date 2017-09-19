@@ -10,6 +10,7 @@ import webpackAssetsMiddleware from 'flying-assets-webpack-plugin/middleware';
 import webpackConfig from '../webpack.dev';
 
 import db from './db';
+import routes from './routes';
 import launching from './launching';
 
 const ENV = process.env.NODE_ENV || 'development';
@@ -26,6 +27,7 @@ const PORT = process.env.PORT || 3000;
     app.set('view engine', 'pug');
 
     app.use(morgan('dev'));
+    app.use(routes());
 
     const compiler = webpack(webpackConfig);
     const publicPath = webpackConfig.output.publicPath;

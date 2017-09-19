@@ -7,6 +7,7 @@ import { join } from 'path';
 import webpackConfig from '../webpack.prod';
 
 import db from './db';
+import routes from './routes';
 import launching from './launching';
 
 import assets from '../dist/assets.json';
@@ -27,6 +28,7 @@ const ASSETS = join(__dirname, '..', 'dist');
     app.set('view engine', 'pug');
 
     app.use(morgan('combined'));
+    app.use(routes());
 
     app.locals.assets = assets;
     app.locals.publicPath = webpackConfig.output.publicPath;

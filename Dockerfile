@@ -40,6 +40,7 @@ RUN npm run build && \
     rm -rf ./node_modules && \
     mv ./build $HOME_DIR/ && \
     mv ./dist $HOME_DIR/ && \
+    cp -a ./views $HOME_DIR/ && \
     cp -a ./package.json $HOME_DIR/ && \
     cp -a ./node_modules-prod $HOME_DIR/node_modules
 

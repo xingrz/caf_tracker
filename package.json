@@ -8,7 +8,7 @@
     "dev": "./node_modules/.bin/babel-node src/server.dev.js",
     "dev:fetch": "./node_modules/.bin/babel-node src/fetch.js",
     "start": "NODE_ENV=production node build/server.prod.js",
-    "start:fetch": "NODE_ENV=production node build/fetch.js",
+    "fetch": "NODE_ENV=production node build/fetch.js",
     "build": "npm run build:client && npm run build:server",
     "build:client": "./node_modules/.bin/webpack --config webpack.prod.js",
     "build:server": "./node_modules/.bin/babel src -d build",

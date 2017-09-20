@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
+import { stringify, parse } from 'querystring';
 
 import moment from 'moment';
-import { concat, map, uniq, uniqBy, isEqual, throttle } from 'lodash';
+import { concat, map, pickBy, uniq, uniqBy, identity, isEqual, throttle } from 'lodash';
 
 import {
   AutoComplete,
@@ -61,15 +63,19 @@ function includes(text1, text2) {
   return text1.toLowerCase().includes(text2.toLowerCase());
 }
 
+function parseSearch(location) {
+  if (location && location.search && location.search.startsWith('?')) {
+    return parse(location.search.substr(1));
+  } else {
+    return {};
+  }
+}
+
+@withRouter
 export default class Releases extends Component {
 
   state = {
     loading: false,
-    filters: {
-      tag: '',
-      chipset: '',
-      version: '',
-    },
   };
 
   preload = getPreloadData();
@@ -77,23 +83,24 @@ export default class Releases extends Component {
   constructor(props) {
     super(props);
 
+    this.state.filters = props.filters || parseSearch(props.location) || {};
     this.state.releases = props.releases || this.preload;
-    this.state.chipsets = uniq(map(this.preload, 'chipset'));
-    this.state.versions = uniq(map(this.preload, 'version'));
+    this.state.chipsets = uniq(map(this.state.releases, 'chipset'));
+    this.state.versions = uniq(map(this.state.releases, 'version'));
 
     this.requestFiltered = throttle(this.requestFiltered, 1000);
   }
 
   async applyFilters(filter) {
-    const filters = { ...this.state.filters, ...filter };
-    const releases = concat(this.preload, this.state.releases).filter(item =>
+    const filters = pickBy({ ...this.state.filters, ...filter }, identity);
+    const releases = this.state.releases.filter(item =>
       (!filters.tag || includes(item.tag, filters.tag)) &&
       (!filters.chipset || includes(item.chipset, filters.chipset)) &&
       (!filters.version || includes(item.version, filters.version)));
 
     this.setState({
       filters,
-      releases: uniqBy(releases, 'tag'),
+      releases,
       loading: true,
     });
 
@@ -108,12 +115,17 @@ export default class Releases extends Component {
 
     this.setState({
       releases,
+      chipsets: uniq(map(releases, 'chipset')),
+      versions: uniq(map(releases, 'version')),
       loading: false,
     });
+
+    this.props.history.replace(`/?${stringify(filters)}`);
   }
 
   renderHeader() {
     const {
+      filters,
       chipsets,
       versions,
     } = this.state;
@@ -124,6 +136,7 @@ export default class Releases extends Component {
           <TableHeaderColumn>
             <HeaderTextField
               hintText="Tag"
+              value={filters.tag}
               onChange={(evt, tag) => this.applyFilters({ tag })}
             />
           </TableHeaderColumn>
@@ -137,6 +150,7 @@ export default class Releases extends Component {
             <HeaderAutoComplete
               hintText="SoC"
               dataSource={chipsets}
+              searchText={filters.chipset || ''}
               onUpdateInput={(chipset) => this.applyFilters({ chipset })}
             />
           </TableHeaderColumn>
@@ -144,6 +158,7 @@ export default class Releases extends Component {
             <HeaderAutoComplete
               hintText="Android"
               dataSource={versions}
+              searchText={filters.version || ''}
               onUpdateInput={(version) => this.applyFilters({ version })}
             />
           </TableHeaderColumn>

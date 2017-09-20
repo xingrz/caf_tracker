@@ -4,10 +4,11 @@ import {
 } from 'sequelize';
 
 import moment from 'moment';
+import { pick, transform } from 'lodash';
 
 import db from '../db';
 
-export default db.define('release', {
+const Release = db.define('release', {
 
   tag: { type: STRING, notNull: true, notEmpty: true, primaryKey: true },
 
@@ -24,3 +25,22 @@ export default db.define('release', {
   version: { type: STRING, notNull: true },
 
 });
+
+Release.findByFilters = function(filters, options = {}) {
+  filters = pick(filters, ['tag', 'chipset', 'version']);
+  filters = transform(filters, (result, value, key) => {
+    if (value) {
+      result.push({
+        [key]: { $like: `%${value}%` },
+      });
+    }
+  }, []);
+
+  if (filters.length > 0) {
+    options.where = { ...options.where, $and: filters };
+  }
+
+  return Release.findAll(options);
+}
+
+export default Release;

@@ -7,14 +7,18 @@ import { BrowserRouter } from 'react-router-dom';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 
 import mui from './mui';
+
 import App from './components/App';
+import Releases from './components/Releases';
 
 const muiTheme = getMuiTheme(mui);
 
 render(
   <BrowserRouter>
     <MuiThemeProvider muiTheme={muiTheme}>
-      <App />
+      <App>
+        <Releases />
+      </App>
     </MuiThemeProvider>
   </BrowserRouter>,
   document.getElementById('root')

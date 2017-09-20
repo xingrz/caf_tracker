@@ -10,5 +10,11 @@
     }],
     "transform-decorators-legacy",
     "lodash",
+    ["direct-import", [
+      "material-ui", {
+        "name": "material-ui/svg-icons",
+        "indexFile": "material-ui/svg-icons/index.es"
+      },
+    ]],
   ],
 }

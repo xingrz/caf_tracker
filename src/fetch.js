@@ -38,7 +38,8 @@ import manifest from './utils/manifest';
         console.log(`[${i + 1}/${fetched.length}] Fetched manifest with ` +
           `${item.manifest.length} projects for ${item.tag}`);
       } catch (e) {
-        console.log(`[${i + 1}/${fetched.length}] Skipped manifest for ${item.tag}`);
+        console.log(`[${i + 1}/${fetched.length}] Skipped empty tag ${item.tag}`);
+        continue;
       }
 
       await Release.upsert(item);

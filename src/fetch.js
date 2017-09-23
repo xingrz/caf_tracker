@@ -29,8 +29,12 @@ import releases from './utils/releases';
       }
     }
 
-    const records = await Release.bulkCreate(fetched, { ignoreDuplicates: true });
-    console.log(`Inserted ${records.length} records`);
+    for (var i = 0; i < fetched.length; i++) {
+      const item = fetched[i];
+
+      await Release.upsert(item);
+      console.log(`[${i + 1}/${fetched.length}] Upserted tag ${item.tag}`);
+    }
 
     process.exit();
   } catch (e) {

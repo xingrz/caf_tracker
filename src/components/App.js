@@ -41,7 +41,11 @@ export default class App extends Component {
 
     return (
       <div>
-        <AppBar title={title} iconElementRight={actions} />
+        <AppBar
+          title={title}
+          iconElementRight={actions}
+          showMenuIconButton={false}
+        />
         {this.props.children}
       </div>
     );

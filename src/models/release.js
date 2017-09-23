@@ -42,6 +42,13 @@ const Release = db.define('release', {
 });
 
 Release.findByFilters = function(filters, options = {}) {
+  options = {
+    attributes: {
+      exclude: ['manifest'],
+    },
+    ...options,
+  };
+
   filters = pick(filters, ['tag', 'chipset', 'version']);
   filters = transform(filters, (result, value, key) => {
     if (value) {

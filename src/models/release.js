@@ -1,6 +1,7 @@
 import {
   DATEONLY,
   STRING,
+  TEXT,
 } from 'sequelize';
 
 import moment from 'moment';
@@ -23,6 +24,20 @@ const Release = db.define('release', {
 
   chipset: { type: STRING, notNull: true },
   version: { type: STRING, notNull: true },
+
+  manifest: {
+    type: TEXT,
+    get() {
+      try {
+        return JSON.parse(this.getDataValue('manifest'));
+      } catch (e) {
+        return null;
+      }
+    },
+    set(value) {
+      this.setDataValue('manifest', JSON.stringify(value));
+    }
+  },
 
 });
 

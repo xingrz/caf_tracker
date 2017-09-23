@@ -19,7 +19,8 @@ A [MoKee Code Review](https://mokeedev.review/) account is required.
 
 ```
 git clone ssh://username@mokeedev.review:29418/MoKee/caf_tracker
-gitdir=$(git rev-parse --git-dir); scp -p -P 29418 username@mokeedev.review:hooks/commit-msg ${gitdir}/hooks/
+cd caf_tracker
+scp -p -P 29418 username@mokeedev.review:hooks/commit-msg .git/hooks/
 ```
 
 ```sh

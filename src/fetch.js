@@ -19,12 +19,14 @@ import releases from './utils/releases';
     let fetched = await releases();
     console.log(`Fetched ${fetched.length} releases`);
 
-    const latest = await Release.findOne({ order: [['date', 'DESC']] });
-    if (latest) {
-      console.log(`Existing latest: ${latest.date}`);
+    if (!process.argv.includes('--all')) {
+      const latest = await Release.findOne({ order: [['date', 'DESC']] });
+      if (latest) {
+        console.log(`Existing latest: ${latest.date}`);
 
-      fetched = fetched.filter(release => release.date >= latest.date);
-      console.log(`Filtered ${fetched.length} new releases`);
+        fetched = fetched.filter(release => release.date >= latest.date);
+        console.log(`Filtered ${fetched.length} new releases`);
+      }
     }
 
     const records = await Release.bulkCreate(fetched, { ignoreDuplicates: true });

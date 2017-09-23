@@ -7,15 +7,19 @@ export default function () {
   const router = new Router();
 
   router.get('/', async (req, res, error) => {
-    const releases = await Release.findByFilters(req.query, {
-      order: [['date', 'DESC']],
-      limit: 200,
-    });
+    try {
+      const releases = await Release.findByFilters(req.query, {
+        order: [['date', 'DESC']],
+        limit: 200,
+      });
 
-    res.json({
-      releases,
-      query: req.query,
-    });
+      res.json({
+        releases,
+        query: req.query,
+      });
+    } catch (e) {
+      error(e);
+    }
   });
 
   return router;

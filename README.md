@@ -1,24 +1,28 @@
-# caf_tracker_v2
+[MoKee CAF Tracker](https://caf.mokeedev.com/)
+==========
 
-## Project setup
-```
-npm install
-```
+Tracking CAF's tag releases
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Develop
 
-### Compiles and minifies for production
 ```
-npm run build
+docker-compose up
 ```
 
-### Lints and fixes files
-```
-npm run lint
+## Contribute
+
+As part of the MoKee Open Source Project, this repository accepts commits
+from our [Gerrit Code Review](https://mokeedev.review/) platform.
+
+```sh
+# setup
+scp -p -P 29418 YOURNAME@mokeedev.review:hooks/commit-msg $(git rev-parse --git-dir)/hooks/
+git remote add review ssh://YOURNAME@mokeedev.review:29418/MoKee/caf_tracker
+
+# submit
+git push review HEAD:refs/for/master
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## License
+
+Apache License 2.0

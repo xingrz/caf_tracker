@@ -1,0 +1,15 @@
+version: '3'
+services:
+  caf_tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ./src:/opt/app/src
+      - ./data:/opt/app/public/data
+    ports:
+      - "8080:8080"
+  caf_fetcher:
+    image: "registry.ap-northeast-1.aliyuncs.com/mokee/caf-fetcher:latest"
+    volumes:
+      - ./data:/opt/app/data

@@ -22,6 +22,20 @@ export default function () {
     }
   });
 
+  router.get('/:tag', async (req, res, error) => {
+    try {
+      const release = await Release.findById(req.params.tag);
+
+      if (!release) {
+        return res.status(404).end();
+      }
+
+      res.json(release);
+    } catch (e) {
+      error(e);
+    }
+  });
+
   return router;
 
 }

@@ -89,6 +89,7 @@ export default class Releases extends Component {
     this.state.versions = uniq(map(this.state.releases, 'version'));
 
     this.requestFiltered = throttle(this.requestFiltered, 1000);
+    this.onRowSelection = this.onRowSelection.bind(this);
   }
 
   async applyFilters(filter) {
@@ -121,6 +122,12 @@ export default class Releases extends Component {
     });
 
     this.props.history.replace(`/?${stringify(filters)}`);
+  }
+
+  onRowSelection([index]) {
+    const filters = pickBy(this.state.filters, identity);
+    const release = this.state.releases[index];
+    this.props.history.push(`/${release.tag}?${stringify(filters)}`);
   }
 
   renderHeader() {
@@ -168,12 +175,17 @@ export default class Releases extends Component {
   }
 
   renderTable() {
+    const tag = this.props.match.params.tag;
     return (
-      <Table selectable={false}>
+      <Table fixedHeader onRowSelection={this.onRowSelection}>
         {this.renderHeader()}
         <TableBody showRowHover displayRowCheckbox={false}>
           {this.state.releases.map(release => (
-            <TableRow key={release.tag}>
+            <TableRow
+              key={release.tag}
+              selected={release.tag == tag}
+              style={{ cursor: 'pointer' }}
+            >
               <TableRowColumn style={textStyle}>{release.tag}</TableRowColumn>
               <TableRowColumn style={textStyle}>
                 {moment.utc(release.date).format('YYYY-MM-DD')}

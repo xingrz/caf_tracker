@@ -5,7 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile-dev
     volumes:
+      - ./babel.config.js:/opt/app/babel.config.js
+      - ./vue.config.js:/opt/app/vue.config.js
       - ./src:/opt/app/src
+      - ./public:/opt/app/public
       - ./data:/opt/app/public/data
     ports:
       - "8080:8080"
@@ -13,3 +16,5 @@ services:
     image: "registry.ap-northeast-1.aliyuncs.com/mokee/caf-fetcher:latest"
     volumes:
       - ./data:/opt/app/data
+    environment:
+      - SEGMENT_SIZE=10

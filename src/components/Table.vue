@@ -36,6 +36,22 @@ export default {
   },
   async mounted() {
     this.$store.dispatch('loadInitial');
+    this.unwatchData = this.$watch('$store.state.release.data', this.loadMore);
+    document.addEventListener('scroll', this.loadMore, false);
+  },
+  beforeDestroy() {
+    this.unwatchData();
+    document.removeEventListener('scroll', this.loadMore);
+  },
+  methods: {
+    loadMore() {
+      const scroll = document.documentElement.scrollTop;
+      const viewportHeight = document.documentElement.clientHeight;
+      const contentHeight = document.body.clientHeight;
+      if (contentHeight - (scroll + viewportHeight) < 10) {
+        this.$store.dispatch('loadMore');
+      }
+    },
   },
 };
 </script>

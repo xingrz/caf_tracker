@@ -12,6 +12,8 @@ async function load(name) {
   };
 }
 
+let lock = false;
+
 export default {
   state: {
     data: [],
@@ -25,8 +27,18 @@ export default {
   },
   actions: {
     async loadInitial({ commit }) {
+      lock = true;
       const { data, next } = await load(`latest`);
       commit('append', { data, next });
+      lock = false;
+    },
+    async loadMore({ commit, state }) {
+      if (lock) return;
+      if (!state.next) return;
+      lock = true;
+      const { data, next } = await load(`static-${state.next}`);
+      commit('append', { data, next });
+      lock = false;
     },
   },
 };

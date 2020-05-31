@@ -18,27 +18,35 @@ export default {
   state: {
     data: [],
     next: null,
+    loading: false,
   },
   mutations: {
     append(state, { data, next }) {
       state.data = [ ...state.data, ...data ];
       state.next = next;
     },
+    loading(state, loading) {
+      state.loading = loading;
+    },
   },
   actions: {
     async loadInitial({ commit }) {
+      commit('loading', true);
       lock = true;
       const { data, next } = await load(`latest`);
       commit('append', { data, next });
       lock = false;
+      commit('loading', false);
     },
     async loadMore({ commit, state }) {
       if (lock) return;
       if (!state.next) return;
+      commit('loading', true);
       lock = true;
       const { data, next } = await load(`static-${state.next}`);
       commit('append', { data, next });
       lock = false;
+      commit('loading', false);
     },
   },
 };

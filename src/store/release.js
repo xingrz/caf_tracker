@@ -19,6 +19,7 @@ export default {
     data: [],
     next: null,
     loading: false,
+    search: [],
   },
   mutations: {
     append(state, { data, next }) {
@@ -27,6 +28,9 @@ export default {
     },
     loading(state, loading) {
       state.loading = loading;
+    },
+    search(state, search) {
+      state.search = search;
     },
   },
   actions: {

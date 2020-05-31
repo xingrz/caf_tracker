@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { debounce } from 'throttle-debounce';
 
 async function load(name) {
   const res = await fetch(`/data/${name}.json`);
@@ -34,23 +35,29 @@ export default {
     },
   },
   actions: {
-    async loadInitial({ commit }) {
+    startLoading: debounce(200, true, ({ commit }) => {
       commit('loading', true);
+    }),
+    stopLoading: debounce(200, false, ({ commit }) => {
+      commit('loading', false);
+    }),
+    async loadInitial({ commit, dispatch }) {
+      dispatch('startLoading');
       lock = true;
       const { data, next } = await load(`latest`);
       commit('append', { data, next });
       lock = false;
-      commit('loading', false);
+      dispatch('stopLoading');
     },
-    async loadMore({ commit, state }) {
+    async loadMore({ commit, dispatch, state }) {
       if (lock) return;
       if (!state.next) return;
-      commit('loading', true);
+      dispatch('startLoading');
       lock = true;
       const { data, next } = await load(`static-${state.next}`);
       commit('append', { data, next });
       lock = false;
-      commit('loading', false);
+      dispatch('stopLoading');
     },
   },
 };

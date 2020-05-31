@@ -6,6 +6,8 @@
       v-bind:disable-pagination="true"
       v-bind:disable-sort="true"
       v-bind:hide-default-footer="true"
+      v-bind:search="$store.state.release.search.join(';')"
+      v-bind:custom-filter="handleFilter"
     >
       <template v-slot:item.tag="{ item }">
         <span style="font-family: monospace;">{{ item.tag }}</span>
@@ -42,10 +44,12 @@ export default {
   async mounted() {
     this.$store.dispatch('loadInitial');
     this.unwatchData = this.$watch('$store.state.release.data', this.loadMore);
+    this.unwatchSearch = this.$watch('$store.state.release.search', this.loadMore);
     document.addEventListener('scroll', this.loadMore, false);
   },
   beforeDestroy() {
     this.unwatchData();
+    this.unwatchSearch();
     document.removeEventListener('scroll', this.loadMore);
   },
   methods: {
@@ -54,6 +58,18 @@ export default {
       if (scrollHeight - (scrollTop + clientHeight) < 100) {
         this.$store.dispatch('loadMore');
       }
+    },
+    handleFilter(_value, _search, item) {
+      const { search } = this.$store.state.release;
+      if (search.length == 0) {
+        return true;
+      }
+      return search.every(q => {
+        if (q == `soc:${item.chipset}`) return true;
+        if (q == `os:${item.version}`) return true;
+        if (item.tag.toLowerCase().includes(q.toLowerCase())) return true;
+        return false;
+      });
     },
   },
 };

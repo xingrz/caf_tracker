@@ -50,10 +50,8 @@ export default {
   },
   methods: {
     loadMore() {
-      const scroll = document.documentElement.scrollTop;
-      const viewportHeight = document.documentElement.clientHeight;
-      const contentHeight = document.body.clientHeight;
-      if (contentHeight - (scroll + viewportHeight) < 10) {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      if (scrollHeight - (scrollTop + clientHeight) < 100) {
         this.$store.dispatch('loadMore');
       }
     },

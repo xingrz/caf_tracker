@@ -2,12 +2,12 @@
   <div>
     <v-data-table
       v-bind:headers="headers"
-      v-bind:items="$store.state.release.data"
+      v-bind:items="data"
+      v-bind:search="search.join(';')"
+      v-bind:custom-filter="handleFilter"
       v-bind:disable-pagination="true"
       v-bind:disable-sort="true"
       v-bind:hide-default-footer="true"
-      v-bind:search="$store.state.release.search.join(';')"
-      v-bind:custom-filter="handleFilter"
     >
       <template v-slot:item.tag="{ item }">
         <span style="font-family: monospace;">{{ item.tag }}</span>
@@ -41,16 +41,28 @@ export default {
       ],
     }
   },
+  computed: {
+    data() {
+      return this.$store.state.release.data;
+    },
+    search() {
+      return this.$store.state.release.search;
+    },
+  },
   async mounted() {
     this.$store.dispatch('loadInitial');
-    this.unwatchData = this.$watch('$store.state.release.data', this.loadMore);
-    this.unwatchSearch = this.$watch('$store.state.release.search', this.loadMore);
     document.addEventListener('scroll', this.loadMore, false);
   },
   beforeDestroy() {
-    this.unwatchData();
-    this.unwatchSearch();
     document.removeEventListener('scroll', this.loadMore);
+  },
+  watch: {
+    data() {
+      this.$nextTick(() => this.loadMore());
+    },
+    search() {
+      this.$nextTick(() => this.loadMore());
+    },
   },
   methods: {
     loadMore() {

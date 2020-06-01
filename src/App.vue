@@ -12,6 +12,9 @@
 </template>
 
 <script>
+import { debounce } from 'throttle-debounce';
+import { stringifyHistory } from './utils/history';
+
 import Table from './components/Table.vue';
 import Search from './components/Search.vue';
 
@@ -20,6 +23,16 @@ export default {
   components: {
     Table,
     Search,
+  },
+  computed: {
+    search() {
+      return this.$store.state.release.search;
+    },
+  },
+  watch: {
+    search: debounce(500, false, (search) => {
+      history.pushState({}, null, stringifyHistory(search));
+    }),
   },
 };
 </script>

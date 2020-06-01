@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { debounce } from 'throttle-debounce';
+import { parseHistory } from '../utils/history';
 
 async function load(name) {
   const res = await fetch(`/data/${name}.json`);
@@ -20,7 +21,7 @@ export default {
     data: [],
     next: null,
     loading: false,
-    search: [],
+    search: parseHistory(location.search),
   },
   mutations: {
     append(state, { data, next }) {

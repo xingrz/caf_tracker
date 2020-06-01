@@ -35,7 +35,7 @@ export default {
   name: 'Search',
   data() {
     return {
-      select: [],
+      select: this.$store.state.release.search,
       search: '',
     };
   },

@@ -4,13 +4,13 @@ import { parseHistory } from '../utils/history';
 
 async function load(name) {
   const res = await fetch(`/data/${name}.json`);
-  const { data, next } = await res.json();
+  const json = await res.json();
   return {
-    data: data.map(item => ({
+    ...json,
+    data: json.data.map(item => ({
       ...item,
       date: moment.utc(item.date).format('YYYY-MM-DD'),
     })),
-    next: next,
   };
 }
 
@@ -19,11 +19,17 @@ let lock = false;
 export default {
   state: {
     data: [],
+    chipsets: [],
+    versions: [],
     next: null,
     loading: false,
     search: parseHistory(location.search),
   },
   mutations: {
+    init(state, { chipsets, versions }) {
+      state.chipsets = chipsets;
+      state.versions = versions;
+    },
     append(state, { data, next }) {
       state.data = [ ...state.data, ...data ];
       state.next = next;
@@ -45,7 +51,8 @@ export default {
     async loadInitial({ commit, dispatch }) {
       dispatch('startLoading');
       lock = true;
-      const { data, next } = await load(`latest`);
+      const { data, chipsets, versions, next } = await load(`latest`);
+      commit('init', { chipsets, versions });
       commit('append', { data, next });
       lock = false;
       dispatch('stopLoading');

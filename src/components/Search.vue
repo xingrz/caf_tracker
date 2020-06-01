@@ -43,12 +43,6 @@ export default {
     releases() {
       return this.$store.state.release.data.map(item => item.tag);
     },
-    chipsets() {
-      return uniq(this.$store.state.release.data.map(item => item.chipset));
-    },
-    versions() {
-      return uniq(this.$store.state.release.data.map(item => item.version)).sort();
-    },
     query() {
       let query = [ ...this.select ];
 
@@ -59,14 +53,16 @@ export default {
       return uniq(query);
     },
     items() {
+      const { chipsets, versions } = this.$store.state.release;
+
       let items = [ ...this.query ];
 
       if (!this.select.some(v => v.startsWith('soc:'))) {
-        items = [ ...items, ...this.chipsets.map(item => `soc:${item}`) ];
+        items = [ ...items, ...chipsets.map(item => `soc:${item}`) ];
       }
 
       if (!this.select.some(v => v.startsWith('os:'))) {
-        items = [ ...items, ...this.versions.map(item => `os:${item}`) ];
+        items = [ ...items, ...versions.map(item => `os:${item}`) ];
       }
 
       return items;

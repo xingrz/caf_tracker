@@ -77,10 +77,13 @@ export default {
         return true;
       }
       return search.every(q => {
-        if (q == `soc:${item.chipset}`) return true;
-        if (q == `os:${item.version}`) return true;
-        if (item.tag.toLowerCase().includes(q.toLowerCase())) return true;
-        return false;
+        if (q.match(/^soc:(.+)$/)) {
+          return item.chipset.includes(RegExp.$1);
+        } else if (q.match(/^os:(.+)$/)) {
+          return item.version.includes(RegExp.$1);
+        } else {
+          return item.tag.toLowerCase().includes(q.toLowerCase());
+        }
       });
     },
   },

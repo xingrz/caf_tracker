@@ -8,7 +8,21 @@ export function parseHistory(search) {
     if (k == 'q') {
       query = [ ...query, ...params[k].split(';') ];
     } else {
-      query.push(`${k}:${params[k]}`);
+      // Backward compatible
+      switch (k) {
+        case 'tag':
+          query.push(`q:${params[k]}`);
+          break;
+        case 'chipset':
+          query.push(`soc:${params[k]}`);
+          break;
+        case 'version':
+          query.push(`os:${params[k]}`);
+          break;
+        default:
+          query.push(`${k}:${params[k]}`);
+          break;
+      }
     }
   }
 

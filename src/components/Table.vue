@@ -3,6 +3,7 @@
     <v-data-table
       v-bind:headers="headers"
       v-bind:items="data"
+      item-key="tag"
       v-bind:search="search.join(';')"
       v-bind:custom-filter="handleFilter"
       v-bind:disable-pagination="true"
